@@ -1,0 +1,30 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Event Log Information
+$logSource = "Office SharePoint Server"
+$logEventID = 5290  # Event ID 5290 corresponds to SSP administration site unavailability
+
+# Check if the SSP administration site is available
+try {
+    # Check the event log for event ID 5290
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        Write-Host "CRITICAL - Event ID 5290 found in the event log. SSP administration site may be unavailable."
+        exit 2  # Exit with a critical status code
+    }
+
+    $webRequest = Invoke-WebRequest -Uri "$centralAdminUrl/_admin/SSPAdmin.aspx" -UseBasicParsing
+
+    if ($webRequest.StatusCode -ne 200) {
+        Write-Host "CRITICAL - SSP administration site is not available (HTTP Status Code: $($webRequest.StatusCode))."
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - SSP administration site is available."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to access the SSP administration site or retrieve event log entries."
+    exit 3  # Exit with an unknown status code
+}

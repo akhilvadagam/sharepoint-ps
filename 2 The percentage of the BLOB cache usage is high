@@ -1,0 +1,21 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint BLOB Cache Settings
+$cacheSettings = Get-SPFarm | Select-Object -ExpandProperty BlobCache
+
+# Calculate the BLOB Cache Usage Percentage
+$cacheSize = $cacheSettings.MaxSize / 1MB
+$cacheUsage = $cacheSettings.Usage / $cacheSize * 100
+
+# Define the threshold for high cache usage (adjust as needed)
+$threshold = 80
+
+# Check if the cache usage percentage is above the threshold
+if ($cacheUsage -ge $threshold) {
+    Write-Host "CRITICAL - BLOB Cache usage is high ($cacheUsage%)."
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - BLOB Cache usage is within acceptable limits ($cacheUsage%)."
+    exit 0  # Exit with an OK status code
+}

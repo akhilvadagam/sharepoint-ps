@@ -1,0 +1,29 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Batches and Documents Information
+$batchesFailedThreshold = 50  # Adjust the threshold as needed
+$documentsFailedThreshold = 50  # Adjust the threshold as needed
+
+# Retrieve the number of failed batches and documents
+try {
+    $searchApp = Get-SPEnterpriseSearchServiceApplication
+
+    $failedBatches = $searchApp.PerformanceCounters | Where-Object { $_.Name -eq "Gatherer Batches Last 1 Hour Failed Rate" }
+    $failedDocuments = $searchApp.PerformanceCounters | Where-Object { $_.Name -eq "Gatherer Documents Last 1 Hour Failed Rate" }
+
+    $failedBatchesPercentage = [math]::Round(($failedBatches.RawValue / $failedBatches.BaseValue) * 100, 2)
+    $failedDocumentsPercentage = [math]::Round(($failedDocuments.RawValue / $failedDocuments.BaseValue) * 100, 2)
+
+    # Check if the percentage of failed batches or documents is high
+    if ($failedBatchesPercentage -ge $batchesFailedThreshold -or $failedDocumentsPercentage -ge $documentsFailedThreshold) {
+        Write-Host "CRITICAL - Percentage of failed batches: $failedBatchesPercentage%, Percentage of failed documents: $failedDocumentsPercentage%"
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - Percentage of failed batches and documents are within acceptable limits."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve batch and document failure information from SharePoint."
+    exit 3  # Exit with an unknown status code
+}

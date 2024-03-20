@@ -1,0 +1,13 @@
+# SharePoint Service Information
+$serviceName = "SPsAlert"  # service name for SharePoint Portal Server Alert service
+
+# Check if SharePoint Portal Server Alert service is running
+$service = Get-Service -Name $serviceName
+
+if ($service.Status -ne "Running") {
+    Write-Host "CRITICAL - SharePoint Portal Server Alert service is not running."
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - SharePoint Portal Server Alert service is running."
+    exit 0  # Exit with an OK status code
+}

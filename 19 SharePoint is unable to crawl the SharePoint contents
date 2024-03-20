@@ -1,0 +1,31 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Event Log Information
+$logSource = "Office SharePoint Server"
+$logEventID = <1000>  # Replace with the actual event ID related to crawling issues
+
+# Check if SharePoint is unable to crawl SharePoint contents
+try {
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $eventMessage = $lastEvent.Message
+
+        # Check if the event message indicates crawling issues
+        if ($eventMessage -match "SharePoint is unable to crawl SharePoint contents") {
+            Write-Host "CRITICAL - SharePoint is unable to crawl SharePoint contents: $eventMessage"
+            exit 2  # Exit with a critical status code
+        } else {
+            Write-Host "OK - SharePoint is crawling contents without issues."
+            exit 0  # Exit with an OK status code
+        }
+    } else {
+        Write-Host "OK - No recent event log entry related to crawling issues found."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to crawling issues."
+    exit 3  # Exit with an unknown status code
+}

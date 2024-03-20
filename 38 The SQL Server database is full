@@ -1,0 +1,29 @@
+# SharePoint Event Log Information
+$logSource = "Windows SharePoint Services 3"
+$logEventID = 3758  # event ID related to SQL Server database full errors
+
+# Check if SQL Server database full errors are reported in the event log
+try {
+    # Check the event log for event ID related to SQL Server database full errors
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $eventMessage = $lastEvent.Message
+
+        # Check if the event message indicates SQL Server database full errors
+        if ($eventMessage -match "The database is full") {
+            Write-Host "CRITICAL - SQL Server database is full: $eventMessage"
+            exit 2  # Exit with a critical status code
+        } else {
+            Write-Host "OK - No recent event log entry related to SQL Server database full errors found."
+            exit 0  # Exit with an OK status code
+        }
+    } else {
+        Write-Host "OK - No recent event log entry related to SQL Server database full errors found."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to SQL Server database full errors."
+    exit 3  # Exit with an unknown status code
+}

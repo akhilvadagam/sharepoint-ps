@@ -1,0 +1,18 @@
+# SharePoint Performance Counter Information
+$counterCategory = "Search Service"
+$counterName = "Gatherer: Document counts waiting for retry"
+
+# Set the threshold for index size increase (e.g., 100 documents)
+$threshold = 200
+
+# Get the current count of documents waiting for retry
+$currentCount = (Get-Counter -Counter "\$counterCategory(\$counterName)").CounterSamples[0].CookedValue
+
+# Check if the current count exceeds the threshold
+if ($currentCount -gt $threshold) {
+    Write-Host "CRITICAL - Index size is increasing (Current Count: $currentCount documents)"
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - Index size is within acceptable limits (Current Count: $currentCount documents)"
+    exit 0  # Exit with an OK status code
+}

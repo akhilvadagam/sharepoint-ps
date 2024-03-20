@@ -1,0 +1,27 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Event Log Information
+$logSource = "Windows SharePoint Services 3 Search"
+$logEventID1 = 2483
+$logEventID2 = 2484
+$logEventCategory = "Gatherer"
+
+# Retrieve recent event log entries related to protocol handler
+try {
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID1, $logEventID2 | Where-Object { $_.Category -eq $logEventCategory } -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $errorMessage = $lastEvent.Message
+
+        Write-Host "CRITICAL - Protocol handler is not loaded: $errorMessage"
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - Protocol handler is loaded."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to the protocol handler."
+    exit 3  # Exit with an unknown status code
+}

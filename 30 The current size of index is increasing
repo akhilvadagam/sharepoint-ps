@@ -1,0 +1,29 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Performance Counter Information
+$counterCategory = "Search Gatherer"
+$counterName = "Current Size of Index"
+
+# Check if the current size of the index is increasing
+try {
+    # Get the performance counter value
+    $counterValue = (Get-Counter -Counter "\\$counterCategory($centralAdminUrl)\$counterName").CounterSamples[0].CookedValue
+
+    # Wait for a moment (e.g., 1 minute)
+    Start-Sleep -Seconds 60
+
+    # Get the performance counter value again
+    $newCounterValue = (Get-Counter -Counter "\\$counterCategory($centralAdminUrl)\$counterName").CounterSamples[0].CookedValue
+
+    if ($newCounterValue -gt $counterValue) {
+        Write-Host "OK - Current size of the index is increasing."
+        exit 0  # Exit with an OK status code
+    } else {
+        Write-Host "CRITICAL - Current size of the index is not increasing."
+        exit 2  # Exit with a critical status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve the current size of the index."
+    exit 3  # Exit with an unknown status code
+}

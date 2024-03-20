@@ -1,0 +1,26 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Search Gatherer Information
+$queueLengthThreshold = 100  # Adjust the threshold as needed
+
+# Retrieve the active queue length
+try {
+    $searchApp = Get-SPEnterpriseSearchServiceApplication
+
+    # Get the active queue length from the search application
+    $queueLength = $searchApp.ActiveQueueLength
+
+    # Check if the active queue length is greater than the threshold
+    if ($queueLength -gt $queueLengthThreshold) {
+        Write-Host "CRITICAL - Large number of documents waiting to be processed: $queueLength"
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - Queue length is within acceptable limits ($queueLength)."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve active queue length information from SharePoint."
+    exit 3  # Exit with an unknown status code
+}
+gitcl

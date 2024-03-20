@@ -1,0 +1,23 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Performance Counter Information
+$counterCategory = "SharePoint Foundation"
+$counterName = "Document Access Retries/sec"
+$thresholdValue = 5  # Define your threshold value here
+
+# Check if the document access retries rate is high
+try {
+    $counterValue = (Get-Counter -Counter "\\$counterCategory($centralAdminUrl)\$counterName").CounterSamples[0].CookedValue
+
+    if ($counterValue -ge $thresholdValue) {
+        Write-Host "CRITICAL - High document access retries rate: $counterValue retries/sec"
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - Document access retries rate is within acceptable limits ($counterValue retries/sec)."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve document access retries rate performance counter."
+    exit 3  # Exit with an unknown status code
+}

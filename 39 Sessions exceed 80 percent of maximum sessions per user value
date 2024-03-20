@@ -1,0 +1,20 @@
+# SharePoint Performance Counter Information
+$counterCategory = "ASP.NET"
+$counterName = "Sessions Active"
+$maxSessionsPerUser = 20  # maximum sessions per user value in your environment
+$warningThreshold = 0.8  # Set the warning threshold to 80 percent
+
+# Get the current sessions active value
+$sessionCount = (Get-Counter -Counter "\$counterCategory(\$counterName)").CounterSamples[0].CookedValue
+
+# Calculate the percentage of sessions used
+$percentageUsed = $sessionCount / $maxSessionsPerUser
+
+# Check if the percentage of sessions used exceeds the warning threshold
+if ($percentageUsed -gt $warningThreshold) {
+    Write-Host "CRITICAL - Sessions exceed 80 percent of maximum sessions per user value: $($percentageUsed * 100)%"
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - Sessions are within acceptable limits: $($percentageUsed * 100)%"
+    exit 0  # Exit with an OK status code
+}

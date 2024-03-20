@@ -1,0 +1,230 @@
+# Define the thresholds for critical and warning levels
+$warningThreshold = 50
+$criticalThreshold = 80
+
+# Function to check the percentage and return the appropriate exit code and message
+function Check-Percentage {
+    param (
+        [string]$label,
+        [float]$value
+    )
+    
+    if ($value -ge $criticalThreshold) {
+        Write-Host "CRITICAL - $label: $value%"
+        exit 2
+    } elseif ($value -ge $warningThreshold) {
+        Write-Host "WARNING - $label: $value%"
+        exit 1
+    } else {
+        Write-Host "OK - $label: $value%"
+        exit 0
+    }
+}
+
+# You may need to customize the commands below to fetch the actual SharePoint data
+# For demonstration purposes, we'll use random values
+
+# Simulate fetching the percentage of failed items
+$failedItemsPercentage = Get-Random -Minimum 0 -Maximum 100
+
+# Simulate fetching the percentage of failed batches
+$failedBatchesPercentage = Get-Random -Minimum 0 -Maximum 100
+
+# Check both percentages
+Check-Percentage "Failed Items Percentage" $failedItemsPercentage
+Check-Percentage "Failed Batches Percentage" $failedBatchesPercentage
+
+
+
+
+----------------------------------------------------------------------------------------------------------------
+
+
+# Define the thresholds for critical and warning levels
+$warningThreshold = 50
+$criticalThreshold = 80
+
+# Function to check the percentage and return the appropriate exit code and message
+function Check-Percentage {
+    param (
+        [string]$label,
+        [float]$value
+    )
+    
+    if ($value -ge $criticalThreshold) {
+        Write-Host "CRITICAL - $label: $value%"
+        exit 2
+    } elseif ($value -ge $warningThreshold) {
+        Write-Host "WARNING - $label: $value%"
+        exit 1
+    } else {
+        Write-Host "OK - $label: $value%"
+        exit 0
+    }
+}
+
+# You need to replace the following placeholders with actual SharePoint data retrieval logic
+# Fetch the percentage of failed items (KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Items_Fail_PerCent)
+# and the percentage of failed batches (KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Batches_Fail_PerCent)
+# For demonstration purposes, we'll use random values
+
+# Simulate fetching the percentage of failed items
+$failedItemsPercentage = Get-Random -Minimum 0 -Maximum 100
+
+# Simulate fetching the percentage of failed batches
+$failedBatchesPercentage = Get-Random -Minimum 0 -Maximum 100
+
+# Check both scenarios
+if ($failedItemsPercentage -ge $warningThreshold -or $failedBatchesPercentage -ge $warningThreshold) {
+    Check-Percentage "Failed Items or Batches Percentage" $($failedItemsPercentage, $failedBatchesPercentage | Measure-Object -Maximum).Maximum
+} else {
+    Write-Host "OK - No issues found"
+    exit 0
+}
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+# Define the thresholds for critical and warning levels
+$warningThreshold = 50
+$criticalThreshold = 80
+
+# Function to check the percentage and return the appropriate exit code and message
+function Check-Percentage {
+    param (
+        [string]$label,
+        [float]$value
+    )
+    
+    if ($value -ge $criticalThreshold) {
+        Write-Host "CRITICAL - $label: $value%"
+        exit 2
+    } elseif ($value -ge $warningThreshold) {
+        Write-Host "WARNING - $label: $value%"
+        exit 1
+    } else {
+        Write-Host "OK - $label: $value%"
+        exit 0
+    }
+}
+
+# You need to replace the following placeholders with actual SharePoint data retrieval logic
+# Fetch the percentage of failed items (KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Items_Fail_PerCent)
+# and the percentage of failed batches (KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Batches_Fail_PerCent)
+
+# Replace the following lines with actual data retrieval logic
+$failedItemsPercentage = 60  # Replace with actual percentage of failed items
+$failedBatchesPercentage = 40  # Replace with actual percentage of failed batches
+
+# Check the scenarios and exit accordingly
+if ($failedItemsPercentage -ge $warningThreshold -or $failedBatchesPercentage -ge $warningThreshold) {
+    Check-Percentage "Failed Items or Batches Percentage" $($failedItemsPercentage, $failedBatchesPercentage | Measure-Object -Maximum).Maximum
+} else {
+    Write-Host "OK - No issues found"
+    exit 0
+}
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+# Specify the path to SharePoint log files
+$logFolderPath = "C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\16\LOGS"
+
+# Define the error message pattern indicating failures
+$errorPattern = "Failed to process document"
+
+# Get all log files in the folder
+$logFiles = Get-ChildItem -Path $logFolderPath -File
+
+# Initialize counters
+$totalEntries = 0
+$failedEntries = 0
+
+# Iterate through log files and count failures
+foreach ($logFile in $logFiles) {
+    $logContent = Get-Content -Path $logFile.FullName -Raw
+    $totalEntries += ($logContent | Select-String -Pattern $errorPattern -AllMatches).Matches.Count
+    $failedEntries += ($logContent | Select-String -Pattern $errorPattern -AllMatches).Matches.Count
+}
+
+# Calculate the percentage of failures
+if ($totalEntries -gt 0) {
+    $failurePercentage = ($failedEntries / $totalEntries) * 100
+} else {
+    $failurePercentage = 0
+}
+
+# Output the result
+Write-Host "Percentage of Failed Items: $failurePercentage%"
+
+
+
+----------------------------------------------------------------------------------------------------------------
+
+
+# Define the SharePoint counters
+$itemsFailPercentCounter = "KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Items_Fail_PerCent"
+$batchesFailPercentCounter = "KQP_OFFICE_SEARCH_FAST_CONTENT_PLUGIN.Batches_Fail_PerCent"
+
+# Get the counter values
+$itemsFailPercent = (Get-Counter -Counter $itemsFailPercentCounter).CounterSamples.CookedValue
+$batchesFailPercent = (Get-Counter -Counter $batchesFailPercentCounter).CounterSamples.CookedValue
+
+# Check the counter values and return a status
+if ($itemsFailPercent -ge 50 -or $batchesFailPercent -ge 50) {
+    Write-Output "CRITICAL: Percentage of failed batches or documents is high"
+    exit 2
+} else {
+    Write-Output "OK: Percentage of failed batches or documents is within acceptable range"
+    exit 0
+}
+
+
+
+
+----------------------------------------------------------------------------------------------------------------
+
+
+
+# Opsview plugins return one of the following exit codes:
+# 0 = OK
+# 1 = WARNING
+# 2 = CRITICAL
+# 3 = UNKNOWN
+
+# Define a function to calculate the percentage of failed batches or documents
+function Get-FailurePercentage {
+    # TODO: Add code here to interact with SharePoint and calculate the failure percentage
+    # For now, we'll just return a placeholder value
+    return 0
+}
+
+# Calculate the failure percentage
+$failurePercentage = Get-FailurePercentage
+
+# Define thresholds for warnings and critical alerts
+$warningThreshold = 10
+$criticalThreshold = 20
+
+# Check the failure percentage and return the appropriate exit code
+if ($failurePercentage -ge $criticalThreshold) {
+    Write-Output "CRITICAL - Failure percentage is $failurePercentage%"
+    exit 2
+} elseif ($failurePercentage -ge $warningThreshold) {
+    Write-Output "WARNING - Failure percentage is $failurePercentage%"
+    exit 1
+} else {
+    Write-Output "OK - Failure percentage is $failurePercentage%"
+    exit 0
+}

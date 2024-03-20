@@ -1,0 +1,32 @@
+# Define the thresholds for critical and warning levels
+$warningThreshold = 80
+$criticalThreshold = 90
+
+# Function to check the percentage and return the appropriate exit code and message
+function Check-Percentage {
+    param (
+        [string]$label,
+        [float]$value
+    )
+    
+    if ($value -ge $criticalThreshold) {
+        Write-Host "CRITICAL - $label: $value%"
+        exit 2
+    } elseif ($value -ge $warningThreshold) {
+        Write-Host "WARNING - $label: $value%"
+        exit 1
+    } else {
+        Write-Host "OK - $label: $value%"
+        exit 0
+    }
+}
+
+# You need to replace the following placeholders with actual SharePoint data retrieval logic
+# Fetch the BLOB cache fill ratio value (KQP_DISK_BASED_CACHE.Blob_Cache_Fill_Ratio)
+# For demonstration purposes, we'll use a random value
+
+# Simulate fetching the BLOB cache fill ratio
+$blobCacheFillRatio = Get-Random -Minimum 0 -Maximum 100
+
+# Check the scenario
+Check-Percentage "BLOB Cache Fill Ratio" $blobCacheFillRatio

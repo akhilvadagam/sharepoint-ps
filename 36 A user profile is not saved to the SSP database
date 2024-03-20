@@ -1,0 +1,29 @@
+# SharePoint Event Log Information
+$logSource = "Office SharePoint Server"
+$logEventID = 5188  # event ID related to user profile save failures
+
+# Check if user profile save failures are reported in the event log
+try {
+    # Check the event log for event ID related to user profile save failures
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $eventMessage = $lastEvent.Message
+
+        # Check if the event message indicates user profile save failures
+        if ($eventMessage -match "User Profile Application: User Profile Synchronization Service failed to save entry") {
+            Write-Host "CRITICAL - User profile save failure reported in the event log: $eventMessage"
+            exit 2  # Exit with a critical status code
+        } else {
+            Write-Host "OK - No recent event log entry related to user profile save failures found."
+            exit 0  # Exit with an OK status code
+        }
+    } else {
+        Write-Host "OK - No recent event log entry related to user profile save failures found."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to user profile save failures."
+    exit 3  # Exit with an unknown status code
+}

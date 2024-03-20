@@ -1,0 +1,13 @@
+# SharePoint Service Information
+$serviceName = "SPAdminV4"  # Replace with the actual service name for SharePoint 2010 Administration service
+
+# Check if SharePoint 2010 Administration service is running
+$service = Get-Service -Name $serviceName
+
+if ($service.Status -ne "Running") {
+    Write-Host "CRITICAL - SharePoint 2010 Administration service is not running."
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - SharePoint 2010 Administration service is running."
+    exit 0  # Exit with an OK status code
+}

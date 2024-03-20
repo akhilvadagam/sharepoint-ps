@@ -1,0 +1,13 @@
+# SharePoint Service Information
+$serviceName = "OSearch14"  # service name for Office SharePoint Server Search
+
+# Check if Office SharePoint Server Search service is running
+$service = Get-Service -Name $serviceName
+
+if ($service.Status -ne "Running") {
+    Write-Host "CRITICAL - Office SharePoint Server Search service is not running."
+    exit 2  # Exit with a critical status code
+} else {
+    Write-Host "OK - Office SharePoint Server Search service is running."
+    exit 0  # Exit with an OK status code
+}

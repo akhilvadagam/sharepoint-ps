@@ -1,0 +1,31 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Event Log Information
+$logSource = "Office SharePoint Server"
+$logEventID = 3351  # event ID related to database login failures
+
+# Check if SharePoint database login has failed
+try {
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $eventMessage = $lastEvent.Message
+
+        # Check if the event message indicates database login failure
+        if ($eventMessage -match "Login failed for user") {
+            Write-Host "CRITICAL - SharePoint database login has failed: $eventMessage"
+            exit 2  # Exit with a critical status code
+        } else {
+            Write-Host "OK - SharePoint database login is successful."
+            exit 0  # Exit with an OK status code
+        }
+    } else {
+        Write-Host "OK - No recent event log entry related to database login failures found."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to database login failures."
+    exit 3  # Exit with an unknown status code
+}

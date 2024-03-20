@@ -1,0 +1,25 @@
+# SharePoint Central Administration Site URL
+$centralAdminUrl = "https://your-sharepoint-central-admin-site"
+
+# SharePoint Event Log Information
+$logSource = "Office SharePoint Server"
+$logEventID = 5162
+
+# Retrieve recent event log entries related to SSP creation
+try {
+    $eventLogEntries = Get-EventLog -LogName "Application" -Source $logSource -EntryType "Error" -InstanceId $logEventID -Newest 1
+
+    if ($eventLogEntries.Count -gt 0) {
+        $lastEvent = $eventLogEntries[0]
+        $errorMessage = $lastEvent.Message
+
+        Write-Host "CRITICAL - SSP creation failed: $errorMessage"
+        exit 2  # Exit with a critical status code
+    } else {
+        Write-Host "OK - No recent SSP creation failure events found."
+        exit 0  # Exit with an OK status code
+    }
+} catch {
+    Write-Host "UNKNOWN - Unable to retrieve event log entries related to SSP creation."
+    exit 3  # Exit with an unknown status code
+}
